@@ -1,0 +1,13 @@
+Example usage of OpenNLP from http://incubator.apache.org/opennlp/
+Models are from http://opennlp.sourceforge.net/models-1.5/
+
+This makes usage and implementation a lot simpler
+Code is in src/java/com/pjaol/data/EntityExtractor
+
+Compiling requires ant & ivy ( automatically downloaded when first run )
+
+Compile with 
+ $ ant
+ 
+ Run example with 
+ $ ant run

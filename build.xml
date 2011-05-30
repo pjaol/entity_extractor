@@ -55,7 +55,7 @@
 	<!-- ================================= 
           target: default              
          ================================= -->
-	<target name="default" depends="depends,init-ivy, clean, setup, resolve, compile" description="description">
+	<target name="default" depends="depends,init-ivy, clean, setup, resolve, compile, jar" description="description">
 
 	</target>
 
@@ -90,6 +90,61 @@
           target: compile              
          ================================= -->
 	<target name="compile" depends="depends" description="description">
-		<javac srcdir="${src.dir}" destdir="${dist.dir}" classpathref="lib.path" debug="on" />
+		<javac srcdir="${src.dir}" destdir="${build.dir}" classpathref="lib.path" debug="on" />
 	</target>
+
+	<target name="jar">
+		<!-- create a property containing all .jar files, prefix lib/, and seperated with a space -->
+		<pathconvert property="libs.project" pathsep=" ">
+			<mapper>
+				<chainedmapper>
+
+					<!-- remove absolute path -->
+					<flattenmapper />
+
+					<!-- add lib/ prefix -->
+					<globmapper from="*" to="../lib/*" />
+				</chainedmapper>
+			</mapper>
+
+			<path>
+
+				<!-- lib.home contains all jar files, in several subdirectories -->
+				<fileset dir="${ivy.lib.dir}">
+					<include name="**/*.jar" />
+				</fileset>
+			</path>
+		</pathconvert>
+
+		<copy todir="${dist.dir}/lib/">
+			<fileset dir="lib" />
+		</copy>
+
+		<jar destfile="${dist.dir}/${ant.project.name}.jar" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Main-Class" value="com.pjaol.data.EntityExtractor" />
+
+				<section name="common">
+					<attribute name="Specification-Title" value="EntityExtractor" />
+					<attribute name="Specification-Version" value="${version}" />
+					<attribute name="Specification-Vendor" value="SearchSaw" />
+					<attribute name="Implementation-Title" value="common" />
+					<attribute name="Implementation-Version" value="${version} ${TODAY}" />
+					<attribute name="Implementation-Vendor" value="SearchSaw Technologies" />
+
+				</section>
+				<attribute name="Class-Path" value="${libs.project}" />
+
+			</manifest>
+		</jar>
+	</target>
+			
+	<!-- ================================= 
+          target: run              
+         ================================= -->
+    <target name="run" description="description">
+    	<java jar="${dist.dir}/${ant.project.name}.jar" fork="true" />
+
+    </target>
 </project>
